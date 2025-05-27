@@ -360,7 +360,7 @@ whodun_Bool spht_processModeback_imp(struct spht_Process* proc, void* traj, void
 }
 whodun_UIntV spht_processDrawV_imp(struct spht_Process* proc, whodun_VoidpV start, whodun_VoidpV traj, struct whodun_Random* rng){
 #if WHODUN_VECTOR_WIDTH == 1
-	return spht_processDrawV_imp(proc, start, traj, rng) ? ~(whodun_UInt)0 : (whodun_UInt)0;
+	return spht_processDraw_imp(proc, start, traj, rng) ? ~(whodun_UInt)0 : (whodun_UInt)0;
 #else
 	whodun_UInt numStoch = proc->numStoch;
 	//copy the starting states
@@ -442,7 +442,7 @@ whodun_UIntV spht_processModeforwV_imp(struct spht_Process* proc, whodun_VoidpV 
 }
 whodun_UIntV spht_processModebackV_imp(struct spht_Process* proc, whodun_VoidpV traj, whodun_VoidpV end){
 #if WHODUN_VECTOR_WIDTH == 1
-	return spht_processModeback_imp(proc, start, traj) ? ~(whodun_UInt)0 : (whodun_UInt)0;
+	return spht_processModeback_imp(proc, traj, end) ? ~(whodun_UInt)0 : (whodun_UInt)0;
 #else
 	whodun_UIntV toRet;
 	whodun_UInt numStoch = proc->numStoch;

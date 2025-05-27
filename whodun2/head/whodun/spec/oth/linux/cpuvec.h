@@ -176,28 +176,28 @@
  * @param toA The addresses to set into.
  * @param toV The values to set to.
  */
-#define whodun_vec_scatterPU(toA, toV) (*(whodun_UInt*)(fromA) = (toV))
+#define whodun_vec_scatterPU(toA, toV) (*(whodun_UInt*)(toA) = (toV))
 
 /**
  * Store a vector into addresses to signed ints.
  * @param toA The addresses to set into.
  * @param toV The values to set to.
  */
-#define whodun_vec_scatterPI(toA, toV) (*(whodun_Int*)(fromA) = (toV))
+#define whodun_vec_scatterPI(toA, toV) (*(whodun_Int*)(toA) = (toV))
 
 /**
  * Store a vector into addresses to floats.
  * @param toA The addresses to set into.
  * @param toV The values to set to.
  */
-#define whodun_vec_scatterPF(toA, toV) (*(whodun_Float*)(fromA) = (toV))
+#define whodun_vec_scatterPF(toA, toV) (*(whodun_Float*)(toA) = (toV))
 
 /**
  * Store a vector into addresses to bytes.
  * @param toA The addresses to set into.
  * @param toV The values to set to.
  */
-#define whodun_vec_scatterPB(toA, toV) (*(char*)(fromA) = (toV))
+#define whodun_vec_scatterPB(toA, toV) (*(char*)(toA) = (toV))
 
 /**
  * Pun an unsigned vector to signed.
