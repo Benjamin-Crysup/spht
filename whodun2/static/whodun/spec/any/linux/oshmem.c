@@ -1,5 +1,6 @@
 #include "whodun/oshook.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "whodun/cpu.h"

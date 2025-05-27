@@ -1,5 +1,7 @@
 #include "whodun/oshook.h"
 
+#include <stdlib.h>
+
 #include <pthread.h>
 
 #include "whodun/ermac.h"

@@ -1,5 +1,7 @@
 #include "whodun/cpu.h"
 
+#include <pthread.h>
+
 #include "whodun/oshook.h"
 
 whodun_UInt whodun_packPtr_imp(void* toPack){
@@ -63,152 +65,155 @@ whodun_Float whodun_fmax_imp(whodun_Float opA, whodun_Float opB){
 	return (opA < opB) ? opA : opB;
 }
 
+//an internal lock
+pthread_mutex_t whodun_atom_help_lock = PTHREAD_MUTEX_INITIALIZER;
+
 whodun_Bool whodun_tryLock_imp(whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Bool toRet = *toLock;
 		*toLock = 0;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 void whodun_unlock_imp(whodun_Lock* toUnlock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		*toUnlock = 1;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 }
 
 whodun_UInt whodun_atomGet_imp(whodun_UInt* toGet, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = *toGet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 void whodun_atomicSet_imp(whodun_UInt* toSet, whodun_UInt toVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		*toSet = toVal;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 }
 
 whodun_UInt whodun_atomicSwap_imp(whodun_UInt* toSwap, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = *toSwap;
 		*toSwap = withVal;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Bool whodun_atomicCAS_imp(whodun_UInt* toUpd, whodun_UInt oldVal, whodun_UInt newVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Bool toRet = *toUpd == oldVal;
 		if(toRet){
 			*toUpd = newVal;
 		}
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicAnd_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = withVal & *toMang;
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicOr_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = withVal | *toMang;
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicXor_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = withVal ^ *toMang;
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicAdd_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = withVal + *toMang;
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicMul_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = withVal * *toMang;
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Int whodun_atomicMin_imp(whodun_UInt* toMang, whodun_Int withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = whodun_min_imp(withVal, *toMang);
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Int whodun_atomicMax_imp(whodun_UInt* toMang, whodun_Int withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = whodun_max_imp(withVal, *toMang);
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicUMin_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = whodun_umin_imp(withVal, *toMang);
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_UInt whodun_atomicUMax_imp(whodun_UInt* toMang, whodun_UInt withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_UInt toRet = whodun_umax_imp(withVal, *toMang);
 		*toMang = toRet;
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Float whodun_atomicFAdd_imp(whodun_UInt* toMang, whodun_Float withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Float toRet = whodun_unpackFlt_imp(*toMang) + withVal;
 		*toMang = whodun_packFlt_imp(toRet);
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Float whodun_atomicFMul_imp(whodun_UInt* toMang, whodun_Float withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Float toRet = whodun_unpackFlt_imp(*toMang) * withVal;
 		*toMang = whodun_packFlt_imp(toRet);
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Float whodun_atomicFMin_imp(whodun_UInt* toMang, whodun_Float withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Float toRet = whodun_fmin_imp(withVal, whodun_unpackFlt_imp(*toMang));
 		*toMang = whodun_packFlt_imp(toRet);
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 
 whodun_Float whodun_atomicFMax_imp(whodun_UInt* toMang, whodun_Float withVal, whodun_Lock* toLock){
-	whodun_mutexLock(whodun_GIL);
+	pthread_mutex_lock(&whodun_atom_help_lock);
 		whodun_Float toRet = whodun_fmax_imp(withVal, whodun_unpackFlt_imp(*toMang));
 		*toMang = whodun_packFlt_imp(toRet);
-	whodun_mutexUnlock(whodun_GIL);
+	pthread_mutex_unlock(&whodun_atom_help_lock);
 	return toRet;
 }
 

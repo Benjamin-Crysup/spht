@@ -1463,9 +1463,15 @@ void whodun_threadJoin_imp(struct whodun_Thread* toWait){
 	free(toWait);
 }
 
+/**A fallback for atomic operations on weird processors.*/
+CRITICAL_SECTION whodun_atom_help_lock;
+
 const char* whodun_initializeOS(int argc, char** argv){
 	whodun_GIL = whodun_mutexAlloc_imp(0);
 	if(!whodun_GIL){ return "Problem allocating primary lock."; }
+	if(InitializeCriticalSectionAndSpinCount(&whodun_atom_help_lock, 3) == 0){
+		return "Could not initialize atomic critical section";
+	}
 	
 	WHODUN_CINIT(whodun_OSAllocator, &whodun_heap_imp);
 	whodun_heap = (struct whodun_Allocator*)&whodun_heap_imp;
@@ -1524,6 +1530,7 @@ void whodun_finalizeOS(){
 	WHODUN_CFIN(whodun_stdout);
 	WHODUN_CFIN(whodun_stdin);
 	WHODUN_CFIN(whodun_heap);
+	DeleteCriticalSection(&whodun_atom_help_lock);
 	whodun_mutexFree_imp(whodun_GIL);
 }
 
